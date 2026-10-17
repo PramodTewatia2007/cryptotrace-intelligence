@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  cryptotrace-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cryptotrace-intelligence
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=cryptotrace-production-jwt-le-2026-key
+      - DEMO_MODE=true
+      - DATABASE_URL=sqlite:///./cryptotrace.db
+    volumes:
+      - cryptotrace_data:/app/backend/data
+      - cryptotrace_evidence:/app/evidence
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  cryptotrace_data:
+  cryptotrace_evidence:
