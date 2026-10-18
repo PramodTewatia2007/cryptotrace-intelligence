@@ -95,9 +95,7 @@ export default function App() {
     try {
       const data = await apiRequest<CaseItem[]>('/cases', {}, activeUser.username);
       setCases(data);
-      if (data.length > 0 && !selectedCase) {
-        setSelectedCase(data[0]);
-      }
+      setSelectedCase((prev) => prev || (data.length > 0 ? data[0] : null));
     } catch (e: any) {
       console.error(e);
     }
@@ -105,9 +103,26 @@ export default function App() {
 
   // Initial Data Fetch
   useEffect(() => {
-    fetchDashboard();
-    fetchCases();
-  }, [activeUser]);
+    let isMounted = true;
+    apiRequest<any>('/dashboard', {}, activeUser.username)
+      .then((data) => {
+        if (isMounted) setDashboardData(data);
+      })
+      .catch((e) => console.error(e));
+
+    apiRequest<CaseItem[]>('/cases', {}, activeUser.username)
+      .then((data) => {
+        if (isMounted) {
+          setCases(data);
+          setSelectedCase((prev) => prev || (data.length > 0 ? data[0] : null));
+        }
+      })
+      .catch((e) => console.error(e));
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeUser.username]);
 
   // Load Trace Graph for a Case
   const loadCaseTrace = async (caseId: number) => {

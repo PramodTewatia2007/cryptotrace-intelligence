@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cryptotrace-intelligence
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: PYTHONUNBUFFERED
+        value: "1"

@@ -11,6 +11,8 @@ class Settings(BaseModel):
     
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./cryptotrace.db")
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     
     # System Operational Mode
     DEMO_MODE: bool = os.getenv("DEMO_MODE", "true").lower() in ("true", "1", "yes")

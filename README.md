@@ -1,6 +1,8 @@
 # CryptoTrace Intelligence
 ### Real-Time Cryptocurrency Fraud Attribution & Investigation System for Law Enforcement Agencies
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/PramodTewatia2007/cryptotrace-intelligence)
+
 CryptoTrace Intelligence is an end-to-end, production-oriented digital forensics and cybercrime investigation platform designed specifically for authorized law enforcement units, cybercrime police stations, intelligence analysts, and judicial vigilance auditors.
 
 The system empowers investigators to analyze suspicious cryptocurrency wallet addresses reported in cybercrime complaints, trace multi-hop fund movements across blockchains, identify downstream Virtual Asset Service Providers (VASPs) / Exchanges, detect complex money-laundering typologies (peeling chains, rapid dispersion, mixers, bridge evasion), secure digital evidence with SHA-256 chain-of-custody seals, and generate court-admissible forensic investigation reports.
@@ -133,6 +135,34 @@ Open **`http://localhost:5173`** in your browser.
 docker compose up --build
 ```
 Open **`http://localhost:8000`** in your browser.
+
+---
+
+### Option C: Deploying to Render (Cloud Production)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/PramodTewatia2007/cryptotrace-intelligence)
+
+#### Method 1: Automatic Blueprint (Recommended)
+1. Fork or push this repository to your GitHub account.
+2. Sign in to [Render Dashboard](https://dashboard.render.com).
+3. Click **New +** -> **Blueprint**.
+4. Connect this repository: `https://github.com/PramodTewatia2007/cryptotrace-intelligence`.
+5. Render reads `render.yaml` automatically, builds the multi-stage Docker container (React frontend + FastAPI backend), configures health checks (`/health`), and deploys your live service.
+
+#### Method 2: Manual Web Service
+1. In Render Dashboard, click **New +** -> **Web Service**.
+2. Select your repository: `cryptotrace-intelligence`.
+3. Choose **Docker** as the runtime.
+4. Settings:
+   - **Environment**: Docker
+   - **Branch**: `main`
+   - **Health Check Path**: `/health`
+   - **Plan**: Free
+5. Environment Variables:
+   - `DEMO_MODE`: `true`
+   - `PYTHONUNBUFFERED`: `1`
+   - `PORT`: (Render sets this dynamically, and the Dockerfile binds automatically)
+6. Click **Create Web Service**. Your service will be online at `https://<your-service-name>.onrender.com`!
 
 ---
 

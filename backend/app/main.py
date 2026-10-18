@@ -75,9 +75,25 @@ def healthcheck():
     }
 
 # Mount static frontend production build if available
-dist_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend/dist"))
-if os.path.exists(dist_dir):
-    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="frontend")
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 404 and not path.startswith("api/"):
+            return await super().get_response("index.html", scope)
+        return response
+
+possible_dist_dirs = [
+    os.getenv("FRONTEND_DIST_DIR", ""),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend/dist")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../frontend/dist")),
+    os.path.abspath(os.path.join(os.getcwd(), "../frontend/dist")),
+    os.path.abspath(os.path.join(os.getcwd(), "frontend/dist")),
+    "/app/frontend/dist",
+]
+dist_dir = next((d for d in possible_dist_dirs if d and os.path.isdir(d)), None)
+
+if dist_dir:
+    app.mount("/", SPAStaticFiles(directory=dist_dir, html=True), name="frontend")
 else:
     @app.get("/")
     def root():
@@ -85,4 +101,5 @@ else:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=False)
